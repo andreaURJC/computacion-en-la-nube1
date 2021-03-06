@@ -15,7 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 @Service("storageService")
-@Profile("production")
+@Profile("dev")
 public class LocalImageService implements ImageService {
 
     @Value("${spring.web.resources.static-locations}")
