@@ -46,6 +46,7 @@ public class S3ImageService implements ImageService {
                 new File(path)
         );
         por.setCannedAcl(CannedAccessControlList.PublicRead);
+        s3.putObject(por);
         return s3.getResourceUrl(bucketName, path);
     }
 
