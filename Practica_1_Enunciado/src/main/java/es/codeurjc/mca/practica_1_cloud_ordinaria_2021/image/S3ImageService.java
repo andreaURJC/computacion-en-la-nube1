@@ -15,14 +15,11 @@ import java.io.File;
 import java.util.UUID;
 
 @Service("storageService")
-@Profile("production")
+@Profile("dev")
 public class S3ImageService implements ImageService {
 
     private final Logger logger = LoggerFactory.getLogger(S3ImageService.class);
     private AmazonS3Client s3;
-
-    @Value("${amazon.s3.region}")
-    private String region;
 
     @Value("${amazon.s3.bucket-name}")
     private String bucketName;
@@ -30,7 +27,7 @@ public class S3ImageService implements ImageService {
     @Value("${amazon.s3.endpoint}")
     private String bucketEndpoint;
 
-    public S3ImageService() {
+    public S3ImageService(@Value("${amazon.s3.region}") String region) {
         this.s3 = (AmazonS3Client) AmazonS3ClientBuilder
                 .standard()
                 .withRegion(region)
