@@ -2,8 +2,7 @@ package es.codeurjc.mca.practica_1_cloud_ordinaria_2021.image;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
-import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +11,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.security.acl.Group;
+import java.util.ArrayList;
 import java.util.UUID;
 
 @Service("storageService")
@@ -41,7 +42,29 @@ public class S3ImageService implements ImageService {
             logger.info("{} already exists.", this.bucketName);
             return;
         }
-        s3.createBucket(this.bucketName);
+
+        CreateBucketRequest cbr = new CreateBucketRequest(this.bucketName);
+        cbr.setCannedAcl(CannedAccessControlList.PublicReadWrite);
+
+        AccessControlList acl = new AccessControlList();
+        // Create a collection of grants to add to the bucket.
+        ArrayList<Grant> grantCollection = new ArrayList<Grant>();
+
+        // Grant the account owner full control.
+        Grant grant1 = new Grant(new CanonicalGrantee(s3.getS3AccountOwner().getId()), Permission.FullControl);
+        grantCollection.add(grant1);
+
+        // Grant the account owner full control.
+        Grant grant2 = new Grant(GroupGrantee.AllUsers, Permission.Read);
+        grantCollection.add(grant2);
+
+        // Grant the account owner full control.
+        Grant grant3 = new Grant(GroupGrantee.AllUsers, Permission.ReadAcp);
+        grantCollection.add(grant3);
+
+        acl.grantAllPermissions(grantCollection.toArray(new Grant[0]));
+        cbr.setAccessControlList(acl);
+        s3.createBucket(cbr);
         logger.info("New bucket created: {}", this.bucketName);
     }
 
@@ -52,7 +75,7 @@ public class S3ImageService implements ImageService {
             String path = "events/" + privateObjectName;
             logger.info("Upload object: "+privateObjectName+" to bucket: " + this.bucketName);
             String fileName = multiPartFile.getOriginalFilename();
-            File file = new File(System.getProperty("java.io.tmpdir") + fileName);
+            File file = new File(System.getProperty("java.io.tmpdir") + "/" + fileName);
             multiPartFile.transferTo(file);
             PutObjectRequest por = new PutObjectRequest(
                     this.bucketName,
