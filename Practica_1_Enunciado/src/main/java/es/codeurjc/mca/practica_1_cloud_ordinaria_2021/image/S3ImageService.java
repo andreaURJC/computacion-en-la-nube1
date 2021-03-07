@@ -3,7 +3,6 @@ package es.codeurjc.mca.practica_1_cloud_ordinaria_2021.image;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
-import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +55,7 @@ public class S3ImageService implements ImageService {
             File file = new File(System.getProperty("java.io.tmpdir") + fileName);
             multiPartFile.transferTo(file);
             PutObjectRequest por = new PutObjectRequest(
-                    bucketName,
+                    this.bucketName,
                     path,
                     file
             );
