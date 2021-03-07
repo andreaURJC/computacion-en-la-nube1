@@ -1,0 +1,35 @@
+PASOS
+
+1º parte
+Enseñar código
+Crear Usuario
+Crear S3 andrea-juanma-urjc (probar meter un bucket inexistente)
+Crear RDS (Solo instancias EC2)
+Crear EC2
+	Añadir el rol S3FullAccess
+	Security Groups (HTTPS, HTTP, TCP Personalizada 8443)
+	IP Elastica
+	VPC
+	instalar java
+		sudo apt-get update
+		sudo apt install -y openjdk-8-jdk
+		java 
+copiar el jar
+	scp -i "andrea-juanma-urjc.pem" practica_1_cloud_ordinaria_2021-0.0.1-SNAPSHOT.jar ubuntu@ec2-52-54-46-173.compute-1.amazonaws.com:/home/ubuntu/app.jar
+conectarnos a EC2
+	ssh -i "andrea-juanma-urjc.pem" ubuntu@ec2-52-54-112-232.compute-1.amazonaws.com (si no funciona ssh-keygen -R ec2-52-54-112-232.compute-1.amazonaws.com)
+ejecutar .jar (Explicar que pasamos los parámetros al lanzar el .jar)
+	java -DBUCKET_NAME=andrea-juanma-urjc -DRDS_ENDPOINT=database-events.cjyvoxj9hemh.us-east-1.rds.amazonaws.com -DRDS_DATABASE=events -DRDS_USER=admin -DRDS_PASS=password -Dspring.profiles.active=production -jar app.jar
+
+2º parte
+Exclusividad RDS para nuestra EC2
+	RDS - Security Groups - Añadir SQL/Aurora - Seleccionar el Security Group de EC2
+
+Ejecución automática en el arranque
+	Crear - sudo touch /usr/local/bin/events_app_service.sh
+	Darle permisos ejecución sudo chmod +x /usr/local/bin/events_app_service.sh
+	Crear - sudo touch /etc/systemd/system/events_app_service.service
+	Habilitar el service para el arranque: sudo systemctl enable events_app_service.service
+	En caso de querer deshabilitar el servicio al arrancar la AMI: sudo systemctl disable events_app_service.service
+
+Crear AMI
