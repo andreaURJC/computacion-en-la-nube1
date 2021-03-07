@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.security.acl.Group;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -23,9 +22,6 @@ public class S3ImageService implements ImageService {
     private AmazonS3Client s3;
 
     private String bucketName;
-
-    @Value("${amazon.s3.endpoint}")
-    private String bucketEndpoint;
 
     public S3ImageService(@Value("${amazon.s3.region}") String region,
                           @Value("${amazon.s3.bucket-name}") String bucketName) {
